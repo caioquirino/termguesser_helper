@@ -38,32 +38,71 @@ const notExistAnyChar = (word: string, chars: string): boolean => {
   return occurrences.length <= 0;
 };
 
-const filterMask = (word: string, mask: string): boolean => {
+const filterExistingInMask = (word: string, mask: string): boolean => {
   const wordChars = word.split('');
   const maskChars = mask.split('');
 
+  let debugResult = '';
+  let result = true;
   for (let i = 0; i < word.length; i++) {
     if (maskChars[i] == '_') {
+      debugResult += '_';
       continue;
     } else {
       if (wordChars[i] != maskChars[i]) {
-        return false;
+        debugResult += wordChars[i];
+        result = false;
+      } else {
+        debugResult += '-';
       }
     }
   }
-  return true;
+  logger.debug('filterExistingInMask', word, mask, debugResult, result);
+  return result;
+};
+
+const filterNonExistingInMask = (word: string, mask: string): boolean => {
+  const wordChars = word.split('');
+  const maskChars = mask.split('');
+
+  let debugResult = '';
+  let result = true;
+  for (let i = 0; i < word.length; i++) {
+    if (maskChars[i] == '_') {
+      debugResult += '_';
+      continue;
+    } else {
+      if (wordChars[i] == maskChars[i]) {
+        debugResult += wordChars[i];
+        result = false;
+      } else {
+        debugResult += '-';
+      }
+    }
+  }
+  logger.debug('filterNonExistingInMask', word, mask, debugResult, result);
+  return result;
 };
 
 const filtered = words
-  .sort()
   .filter((x) => x.length == 5)
+  .filter(
+    (x) =>
+      x == 'janta' ||
+      x == 'pasta' ||
+      x == 'tonta' ||
+      x == 'testa' ||
+      x == 'tosta'
+  )
+  .sort()
   .filter(onlyUnique)
-  .filter((x) => x == 'janta' || x == 'pasta' || x == 'tonta')
   .filter(
     (x) =>
       existsAllChars(x, 'ta') &&
-      notExistAnyChar(x, 'uij') &&
-      filterMask(x, '___ta')
+      notExistAnyChar(x, 'ij') &&
+      filterExistingInMask(x, '___ta') &&
+      filterNonExistingInMask(x, 'peu__') &&
+      filterNonExistingInMask(x, 'p_a__')
   );
 
 logger.info('result: ', filtered);
