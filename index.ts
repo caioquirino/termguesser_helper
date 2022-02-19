@@ -13,17 +13,29 @@ const logger = {
 const existsAllChars = (word: string, chars: string): boolean => {
   const wordUnique = word.split('').filter(onlyUnique);
 
-  const count = chars.split('').filter((x) => wordUnique.indexOf(x) > 0).length;
-  logger.debug('existsAllChars', word, chars, count, chars.length == count);
-  return chars.length == count;
+  const occurrences = chars.split('').filter((x) => wordUnique.indexOf(x) >= 0);
+  logger.debug(
+    'existsAllChars',
+    word,
+    chars,
+    occurrences,
+    chars.length == occurrences.length
+  );
+  return chars.length == occurrences.length;
 };
 
 const notExistAnyChar = (word: string, chars: string): boolean => {
   const wordUnique = word.split('').filter(onlyUnique);
 
-  const count = chars.split('').filter((x) => wordUnique.indexOf(x) > 0).length;
-  logger.debug('notExistAnyChar', word, chars, count, count == 0);
-  return count == 0;
+  const occurrences = chars.split('').filter((x) => wordUnique.indexOf(x) >= 0);
+  logger.debug(
+    'notExistAnyChar',
+    word,
+    chars,
+    occurrences,
+    occurrences.length == 0
+  );
+  return occurrences.length <= 0;
 };
 
 const filterMask = (word: string, mask: string): boolean => {
@@ -43,15 +55,15 @@ const filterMask = (word: string, mask: string): boolean => {
 };
 
 const filtered = words
-  .filter(onlyUnique)
   .sort()
   .filter((x) => x.length == 5)
-  .filter((x) => x == 'janta' || x == 'pasta')
+  .filter(onlyUnique)
+  .filter((x) => x == 'janta' || x == 'pasta' || x == 'tonta')
   .filter(
     (x) =>
       existsAllChars(x, 'ta') &&
-      notExistAnyChar(x, 'uiej') &&
+      notExistAnyChar(x, 'uij') &&
       filterMask(x, '___ta')
   );
 
-logger.info('result', filtered);
+logger.info('result: ', filtered);
